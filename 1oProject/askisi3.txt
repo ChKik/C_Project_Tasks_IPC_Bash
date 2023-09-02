@@ -1,0 +1,280 @@
+//kwdikas gia graphviz +screen gia erwthma 1
+
+Κικίδης Χαρίτων     	1084595	up1084595@upnet.gr
+Νασιέλη Βασιλική    	1090034	up1090034@upnet.gr
+Πλάτωνας Θεόδωρος   	1090073	up1090073@upnet.gr
+Σουλελέ Αναστασία   	1084612	up1084612@upnet.gr
+
+
+
+α)
+digraph PHARM {
+    node [shape=rectangle]
+    E1 -> E2
+    E1 -> E4
+    E1 -> E5
+    E1 -> E3
+    E2 -> E6
+    E6 -> E7
+    E7 -> E8
+    E8 -> E9
+    E9 -> E10
+    E10 -> E11
+    E3 -> E6
+    E4 -> E10
+    E5 -> E11
+    E11 -> E12
+}
+ 
+
+Β)
+
+(REPEAT)
+BEGIN
+  E1; print(Read quantity to be produced);
+ COBEGIN
+  E5; print(Make packaging);
+   BEGIN
+    COBEGIN
+      E4; print(Make tags);
+       COBEGIN
+      E2; print(Make vials);
+      E3; print(Make caps);
+       COEND
+       E6;  print(Disinfect vials and caps);
+       E7;  print(Insert Serum);
+       E8;  print(Insert active agent);
+       E9;  print(Place caps in vials);
+     COEND
+        E10; print(Stick tags in vials); 
+    END
+  COEND
+   Ε11; print(Stick tags in packaging);
+   E12; print(Pack a dozen of vials);
+END 
+
+(FOREVER)
+
+γ) 
+
+
+Αριθμός σημαφόρων: 12
+
+semaphore S1 = 1;  // for accessing the planned production quantity of drug vials
+semaphore S2 = 0;  // for signaling completion of glass vial production
+semaphore S3 = 0;  // for signaling completion of cap production
+semaphore S4 = 0;  // for signaling completion of labels for vials
+semaphore S5 = 0;  // for signaling completion of box production
+semaphore S6 = 0;  // for signaling completion of disinfection
+semaphore S7 = 0;  // for signaling completion of introduction of serum
+semaphore S8 = 0;  // for signaling completion of introduction of active substance
+semaphore S9 = 0;  // for signaling completion of placing caps on vials
+semaphore S10 = 0;  // for signaling completion of vial labeling
+semaphore S11 = 0;  // for signaling completion of sticking labels on cardboard packaging
+semaphore S12 = 0;  // for signaling completion of packaging of vials in cardboard boxes
+
+
+ E1() {
+    wait(S1);
+    // Ανάγνωση προγραμματισμένης παραγόμενης ποσότητας φιαλιδίων με φάρμακο 
+    signal(S2);
+    signal(S3);
+    signal(S4);
+    signal(S5);
+}
+
+
+ E2() {
+    wait(S2);
+    // Παραγωγή γυάλινων φιαλιδίων
+    signal(S6);
+}
+
+
+ E3() {
+    wait(S3);
+    // Παραγωγή καπακιών για τα φιαλίδια
+    signal(S6);
+}
+
+
+ E4() {
+    wait(S4);
+    // Παραγωγή ετικετών για τα φιαλίδια και χαρτόκουτα
+    signal(S10);
+}
+
+
+ E5() {
+    wait(S5);
+    // Παραγωγή χαρτόκουτων συσκευασίας
+    signal(S11);
+}
+
+
+ E6() {
+    wait(S6);
+    // Απολύμανση γυάλινων φιαλιδίων και καπακιών 
+    signal(S7);
+}
+
+
+ E7() {
+    wait(S7);
+    // Εισαγωγή ορού στα φιαλίδια
+    signal(S8);
+}
+
+
+ E8() {
+    wait(S8);
+    // Εισαγωγή δραστικής ουσίας στα φιαλίδια
+    signal(S9);
+}
+
+
+ E9() {
+    wait(S9);
+    // Τοποθέτηση καπακιών στα φιαλίδια
+    signal(S10);
+}
+
+
+ E10() {
+    wait(S10);
+    // Κόλληση ετικετών στα φιαλίδια
+    signal(S11);
+}
+
+
+ E11() {
+    wait(S11);
+    // Κόλληση ετικετών στις συσκευασίας χαρτόκουτου
+    signal(s12);
+}
+
+
+ E12() {
+    wait(S12);
+    // Συσκευασία των φιαλιδίων σε χαρτόκουτα
+    signal(S1);
+}
+
+
+δ) Αριθμός σημαφόρων : 5
+ 
+semaphore read = 1;
+semaphore vials = 0;
+semaphore caps = 0;
+semaphore labels = 0;
+semaphore boxes = 0;
+semaphore production = 0;
+
+BEGIN
+
+procedure E1()
+begin
+    wait(read)
+    // Ανάγνωση προγραμματισμένης παραγόμενης ποσότητας φιαλιδίων με φάρμακο 
+    signal(production)
+end
+
+
+procedure E2()
+begin
+    wait(production)
+    // Παραγωγή γυάλινων φιαλιδίων
+    signal(vials)
+    signal(production)
+end
+
+
+procedure E3()
+begin
+    wait(production)
+    //  Παραγωγή καπακιών για τα φιαλίδια
+    signal(caps)
+    signal(production)
+end
+
+
+procedure E4()
+begin
+    wait(production)
+    // Παραγωγή ετικετών για τα φιαλίδια και χαρτόκουτα
+    signal(labels)
+    signal(production)
+end
+
+
+procedure E5()
+begin
+    wait(production)
+    // Παραγωγή χαρτόκουτων συσκευασίας
+    signal(boxes)
+    signal(production)
+end
+
+procedure E6()
+begin
+    wait(vials)
+    wait(caps)
+    // Απολύμανση γυάλινων φιαλιδίων και καπακιών 
+end
+
+
+procedure E7()
+begin
+    wait(vials)
+    //  Εισαγωγή ορού στα φιαλίδια
+    signal(vials)
+end
+
+
+procedure E8()
+begin
+    wait(vials)
+    //  Εισαγωγή δραστικής ουσίας στα φιαλίδια
+    signal(vials)
+end
+
+procedure E9()
+begin
+    wait(vials)
+    wait(caps)
+    // Τοποθέτηση καπακιών στα φιαλίδια
+    signal(vials)
+    signal(caps)
+end
+
+
+procedure E10()
+begin
+    wait(vials)
+    wait(labels)
+    // Κόλληση ετικετών στα φιαλίδια
+    signal(vials)
+    signal(labels)
+end
+
+
+procedure E11()
+begin
+    wait(labels)
+    wait(boxes)
+    //  Κόλληση ετικετών στις συσκευασίας χαρτόκουτου
+    signal(labels)
+    signal(boxes)
+end
+
+procedure E12()
+begin
+    wait(vials)
+    wait(boxes)
+    // Συσκευασία των φιαλιδίων σε χαρτόκουτα
+    signal(vials)
+    signal(boxes)
+    signal(read)
+end
+
+END
